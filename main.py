@@ -12,9 +12,8 @@ def carregar_configuracoes():
         "caminho": os.getenv("LLM_API_PATH", "/chat/completions"),
         "api_key": os.getenv("LLM_API_KEY"),
         "modelo": os.getenv("LLM_MODEL"),
-        "temperatura": float(os.getenv("LLM_TEMPERATURE", "0.7")),
-        "max_tokens": int(os.getenv("LLM_MAX_TOKENS", "1000")),
-        "timeout": float(os.getenv("LLM_TIMEOUT", "30"))
+        "max_tokens": int(os.getenv("LLM_MAX_TOKENS", "2048")),
+        "timeout": float(os.getenv("LLM_TIMEOUT", "60"))
     }
 
 def organizar_anotacao(anotacao):
@@ -23,34 +22,36 @@ def organizar_anotacao(anotacao):
     config = carregar_configuracoes()
 
     prompt = """
-    Você é um assistente responsável por organizar anotações.
-    Sua tarefa é transformar o texto fornecido pelo usuário em uma lista clara e organizada de tarefas. 
+    Você é um assistente especializado em identificar e organizar tarefas presentes em anotações escritas em linguagem natural. Sua tarefa é extrair todas as tarefas mencionadas pelo usuário e apresentá-las em uma lista numerada.
 
     Instruções:
-    - identifique todas as tarefas mencionadas;
-    - organize as tarefas em uma lista numerada;
-    - identifique os prazos quando estiverem presentes;
-    - identifique os responsáveis quando estiverem presentes;
-    - não invente informações que não estejam no texto;
-    - quando não houver prazo, informe "Prazo não definido.";
-    - quando o responsável for o próprio usuário, informe "Eu";
-    - utilize uma linguagem clara e objetiva;
-    - utilize uma formatação de texto simples e limpa, sem markdown.
+    - Identifique todas as tarefas, sem deixar nenhuma de fora.
+    - Identifique os prazos mencionados no texto.
+    - Quando não houver prazo identificado, informe "Não definido".  
+    - Não invente informações.
+    - Utilize uma formatação de texto simples e limpa, sem markdown.
+
+    Formato obrigatório da resposta:
+    1. Tarefa: [descrição da tarefa]
+       Prazo: [prazo ou Não definido]
+
+    2. Tarefa: [descrição da tarefa]
+       Prazo: [prazo ou Não definido]
     """
 
-    # monta o endereço da requisição
+    # Monta o endereço da requisição
     url = (
         config["base_url"].rstrip("/")
         + "/"
         + config["caminho"].lstrip("/")
     )
 
-    # configura a autenticação
+    # Configura a autenticação
     cabecalhos = {
         "Authorization": f"Bearer {config['api_key']}"
     }
 
-    # monta o conteúdo enviado ao modelo
+    # Monta o conteúdo enviado ao modelo
     corpo = {
         "model": config["modelo"],
         "messages": [
@@ -63,11 +64,10 @@ def organizar_anotacao(anotacao):
                 "content": anotacao
             }
         ],
-        "temperature": config["temperatura"],
         "max_tokens": config["max_tokens"]
     }
 
-    # realiza a requisição HTTP
+    # Realiza a requisição HTTP
     resposta = requests.post(
         url,
         headers=cabecalhos,
@@ -77,7 +77,7 @@ def organizar_anotacao(anotacao):
 
     resposta.raise_for_status()
 
-    # extrai o texto retornado pelo modelo
+    # Extrai o texto retornado pelo modelo
     dados = resposta.json()
 
     return dados["choices"][0]["message"]["content"]
