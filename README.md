@@ -38,24 +38,24 @@ Pode não responder bem a requisições muito longas e que levem muito tempo.
 Os comandos abaixo foram escritos para **PowerShell no Windows**. Em Linux ou macOS, troque a ativação do ambiente virtual por `source .venv/bin/activate`.
 
 1. Clone o repositório e entre na pasta:
-   ```powershel
-   git clone <URL-DO-REPOSITORIO>
-   cd TrendsIA-P0
-   ```
+```powershel
+git clone <URL-DO-REPOSITORIO>
+cd TrendsIA-P0
+```
 2. Crie e ative um ambiente virtual:
-   ```powershell
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   ```
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
 3. Instale as dependências:
-   ```powershell
-   python -m pip install --upgrade pip
-   pip install -r requirements.txt
-   ```
+```powershell
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
 4. Crie o arquivo de configuração local a partir do modelo:
-   ```powershell
-   Copy-Item .env.example .env
-   ```
+```powershell
+Copy-Item .env.example .env
+```
 5. Edite o `.env` e preencha `LLM_API_KEY` conforme a seção seguinte.
 
 ## Configuração do acesso ao LLM
