@@ -23,7 +23,7 @@ def chamar_llm(anotacao, config):
         "messages": [
             {
                 "role": "system",
-                "content": anotacao
+                "content": preparar_prompt()
             },
             {
                 "role": "user",
