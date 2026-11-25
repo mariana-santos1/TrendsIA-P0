@@ -58,9 +58,14 @@ def chamar_llm(anotacao, config):
                 "Limite de solicitações atingido. Tente novamente mais tarde."
             )
 
-        if resposta.status_code == 500:
+        if resposta.status_code == 503:
             raise RuntimeError(
-                "O serviço LMM está temporariamente indisponível."
+                "O modelo está temporariamente sobrecarregado. Tente novamente em alguns instantes."
+            )
+
+        if resposta.status_code >= 500:
+            raise RuntimeError(
+                "O serviço do LLM está temporariamente indisponível."
             )
 
         resposta.raise_for_status()
