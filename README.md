@@ -20,6 +20,7 @@ Uma solução baseada apenas em regras, por exemplo, dividir o texto por pontos 
 ## Funcionamento da solução
 
 ### Estrutura do projeto:
+```
 └── TrendsIA-P0
     ├── README.md
     ├── requirements.txt
@@ -31,7 +32,7 @@ Uma solução baseada apenas em regras, por exemplo, dividir o texto por pontos 
         ├── main.py
         ├── organizador.py
         └── prompt.py
-
+```
 ### O fluxo implementado é:
 1. **Captura da entrada** - `main()` recebe a anotação digitada pelo usuário no terminal.
 2. **Validação da entrada** - verifica se a anotação está vazia ou contém apenas espaços em branco.
