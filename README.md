@@ -16,25 +16,39 @@ A tarefa envolve interpretação de linguagem natural:
 - a redação é informal e não segue um formato fixo.
 
 Uma solução baseada apenas em regras, por exemplo, dividir o texto por pontos ou palavras-chave, falharia em anotações com itens encadeados, negações ou prazos implícitos. O LLM consegue identificar os itens e normalizar a saída no formato solicitado. A resposta é ainda limitada por um prompt com formato obrigatório, que reduz a variação da saída e evita invenção de informações.
+
 ## Funcionamento da solução
 
+### Estrutura do projeto:
+└── TrendsIA-P0
+    ├── README.md
+    ├── requirements.txt
+    ├── .env.example
+    └── src/
+        ├── __init__.py
+        ├── config.py
+        ├── llm_client.py
+        ├── main.py
+        ├── organizador.py
+        └── prompt.py
+
 ### O fluxo implementado é:
-1. **Captura da entrada** - `main()` lê a anotação digitada no terminal com `input()`.
-2. **Validação simples** - se a entrada for vazia, o programa exibe uma mensagem de erro e encerra sem chamar o modelo.
-3. **Carregamento da configuração** - `carregar_configuracoes()` lê as variáveis de ambiente do arquivo `.env` (via `python-dotenv`): URL base, caminho do endpoint, chave, modelo, limite de tokens e timeout.
-4. **Preparação da solicitação** - `organizar_anotacao()` monta a URL, o cabeçalho `Authorization: Bearer <chave>` e o corpo JSON no formato de chat (`messages` com um prompt de sistema e a anotação do usuário).
-5. **Chamada ao LLM** - `requests.post()` envia a requisição HTTP ao endpoint compatível com a API. `raise_for_status()` verifica erros HTTP e o `timeout` evita espera indefinida.
-6. **Processamento da resposta** - o texto é extraído de `choices[0].message.content`.
-7. **Apresentação** - o resultado é impresso no terminal.
-### Prompt utilizado:
-O prompt de sistema define o papel do modelo, as regras de extração e um formato obrigatório de saída (lista numerada com Tarefa e Prazo), orientando o modelo a não inventar informações e a usar texto simples, sem Markdown, facilitando a leitura do usuário pelo terminal.
+1. **Captura da entrada** - `main()` recebe a anotação digitada pelo usuário no terminal.
+2. **Validação da entrada** - verifica se a anotação está vazia ou contém apenas espaços em branco.
+3. **Carregamento e validação da configuração** - `carregar_configuracoes()`, em `config.py`, carrega as variáveis de ambiente e verifica se os parâmetros necessários estão configurados corretamente.
+4. **Preparação do prompt** - `preparar_prompt()`, em `prompt.py`, fornece as instruções que orientam o modelo na identificação e organização das tarefas.
+5. **Processamento da anotação** - `organizar_anotacao()`, em `organizador.py`, coordena o processamento da entrada e a chamada ao modelo.
+6. **Comunicação com o LLM** - `chamar_llm()`, em `llm_client.py`, prepara e envia a requisição HTTP ao provedor e processa a resposta recebida.
+7. **Apresentação do resultado** - `main()` exibe a lista organizada no terminal.
+
+A aplicação também realiza o tratamento de erros relacionados às configurações, credenciais, comunicação com a API, indisponibilidade do serviço e respostas inválidas.
 
 ## Limites do projeto
 Não possui interface web ou gráfica, aplicativo móvel, autenticação de usuários, banco de dados, RAG, agentes, comparação de modelos, implantação em nuvem e treinamento/ajuste de modelos.
 
-Pode não responder bem a requisições muito longas e que levem muito tempo.
-## Instalação
+A disponibilidade e o desempenho da aplicação dependem do serviço LLM utilizado, podendo ocorrer limitações de requisições, indisponibilidade temporária ou falhas de comunicação.
 
+## Instalação
 Os comandos abaixo foram escritos para **PowerShell no Windows**. Em Linux ou macOS, troque a ativação do ambiente virtual por `source .venv/bin/activate`.
 
 1. Clone o repositório e entre na pasta:
@@ -60,7 +74,12 @@ Copy-Item .env.example .env
 
 ## Configuração do acesso ao LLM
 
-O projeto usa o **Google Gemini** por meio do endpoint compatível com a API OpenAI (`https://generativelanguage.googleapis.com/v1beta/openai/`). A chamada é feita com `requests`, sem SDK específico do provedor.
+A aplicação utiliza uma interface de comunicação baseada em requisições HTTP, realizada com a biblioteca requests, para acessar um modelo de linguagem.
+
+A configuração inicial utiliza o Google Gemini, por meio do endpoint compatível com a API OpenAI: https://generativelanguage.googleapis.com/v1beta/openai/
+
+A comunicação é realizada diretamente por requisições HTTP, sem utilizar um SDK específico do provedor. Entretanto, a estrutura do projeto utiliza configurações genéricas, permitindo adaptar a comunicação para outros provedores que ofereçam uma interface compatível ou mediante ajustes no módulo llm_client.py.
+
 ### Obtenção da chave
 1. Acesse o [Google AI Studio](https://aistudio.google.com/app/apikey) com uma conta Google.
 2. Crie uma chave de API.
@@ -100,7 +119,7 @@ python -m src.main
 ```
 O programa exibe:
 ```text
-Oganizador de Anotações
+ORGANIZADOR DE ANOTAÇÕES
 
 Digite sua anotação:
 ```
@@ -146,7 +165,7 @@ Saída esperada:
 Entrada: pressionar Enter sem digitar nada.
 Saída:
 ```text
-Erro: a anotação não pode estar vazia!
+Erro: A anotação não pode estar vazia.
 ```
 Nesse caso nenhuma chamada ao LLM é realizada.
 ## Testes: reais e simulados
