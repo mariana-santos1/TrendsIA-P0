@@ -4,6 +4,10 @@ from src.llm_client import chamar_llm
 def organizar_anotacao(anotacao):
     """Organiza uma anotação utilizando o modelo do LLM"""
 
+    # Valida a entrada
+    if not anotacao or not anotacao.strip():
+        raise ValueError("A anotação não pode estar vazia.")
+
     # Carrega as configurações
     config = carregar_configuracoes()
 
