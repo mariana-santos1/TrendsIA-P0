@@ -5,14 +5,20 @@ def main():
 
     anotacao = input("\nDigite sua anotação:\n")
 
-    if not anotacao:
-        print("\nErro: a anotação não pode estar vazia!")
-        return
+    try:
+        resultado = organizar_anotacao(anotacao)
 
-    resultado = organizar_anotacao(anotacao)
+        print("\nANOTAÇÃO ORGANIZADA:")
+        print(resultado)
 
-    print("\nANOTAÇÃO ORGANIZADA:")
-    print(resultado)
+    except ValueError as erro:
+        print(f"\nErro: {erro}")
+
+    except RuntimeError as erro:
+        print(f"\nErro: {erro}")
+
+    except Exception:
+        print("\nErro inesperado durante a execução.")
 
 if __name__ == "__main__":
     main()
