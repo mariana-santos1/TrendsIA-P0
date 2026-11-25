@@ -96,7 +96,7 @@ LLM_TIMEOUT=60
 
 Com o ambiente virtual ativado e o `.env` configurado:
 ```powershell
-python main.py
+python -m src.main
 ```
 O programa exibe:
 ```text
