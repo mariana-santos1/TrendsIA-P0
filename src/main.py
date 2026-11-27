@@ -1,21 +1,21 @@
-from src.organizador import organizar_anotacao
+from src.organizer import organize_note
 
 def main():
     print("ORGANIZADOR DE ANOTAÇÕES")
 
-    anotacao = input("\nDigite sua anotação:\n")
+    note = input("\nDigite sua anotação:\n")
 
     try:
-        resultado = organizar_anotacao(anotacao)
+        result = organize_note(note)
 
         print("\nANOTAÇÃO ORGANIZADA:")
-        print(resultado)
+        print(result)
 
-    except ValueError as erro:
-        print(f"\nErro: {erro}")
+    except ValueError as error:
+        print(f"\nErro: {error}")
 
-    except RuntimeError as erro:
-        print(f"\nErro: {erro}")
+    except RuntimeError as error:
+        print(f"\nErro: {error}")
 
     except Exception:
         print("\nErro inesperado durante a execução.")

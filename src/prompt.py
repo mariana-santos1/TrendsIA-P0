@@ -1,4 +1,4 @@
-def preparar_prompt():
+def build_prompt():
     """Prepara as instruções enviadas ao modelo."""
     
     return """

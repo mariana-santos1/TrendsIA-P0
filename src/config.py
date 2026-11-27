@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-def carregar_configuracoes():
+def load_config():
     """Carrega as configurações do provedor LLM."""
 
     # Carrega as configurações do .env
@@ -11,9 +11,9 @@ def carregar_configuracoes():
     try:
         config = {
             "base_url": os.getenv("LLM_API_BASE_URL"),
-            "caminho": os.getenv("LLM_API_PATH", "/chat/completions"),
+            "path": os.getenv("LLM_API_PATH", "/chat/completions"),
             "api_key": os.getenv("LLM_API_KEY"),
-            "modelo": os.getenv("LLM_MODEL"),
+            "model": os.getenv("LLM_MODEL"),
             "max_tokens": int(os.getenv("LLM_MAX_TOKENS", "2048")),
             "timeout": float(os.getenv("LLM_TIMEOUT", "60"))
         }
@@ -24,21 +24,21 @@ def carregar_configuracoes():
         )
 
     # Verifica configurações obrigatórias
-    parametros_obrigatorios = {
+    required_parameters = {
         "base_url": "A URL da API não foi configurada.",
-        "caminho": "O caminho da API não foi configurado.",
-        "api_key": "A chave da API não foi configurada.", 
-        "modelo": "O modelo da API não foi configurado."
+        "path": "O caminho da API não foi configurado.",
+        "api_key": "A chave da API não foi configurada.",
+        "model": "O modelo da API não foi configurado."
     }
 
-    for parametro, mensagem in parametros_obrigatorios.items():
-        if not config[parametro] or not config[parametro].strip():
-            raise ValueError(mensagem)
+    for parameter, message in required_parameters.items():
+        if not config[parameter] or not config[parameter].strip():
+            raise ValueError(message)
 
     # Valida os parâmetros numéricos
     if config["max_tokens"] <= 0:
-        raise ValueError("O limite de tolkens deve ser maior que zero.")
-    
+        raise ValueError("O limite de tokens deve ser maior que zero.")
+
     if config["timeout"] <= 0:
         raise ValueError("O timeout deve ser maior que zero.")
 

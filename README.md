@@ -30,16 +30,16 @@ Uma solução baseada apenas em regras, por exemplo, dividir o texto por pontos 
         ├── config.py
         ├── llm_client.py
         ├── main.py
-        ├── organizador.py
+        ├── organizer.py
         └── prompt.py
 ```
 ### O fluxo implementado é:
 1. **Captura da entrada** - `main()` recebe a anotação digitada pelo usuário no terminal.
 2. **Validação da entrada** - verifica se a anotação está vazia ou contém apenas espaços em branco.
-3. **Carregamento e validação da configuração** - `carregar_configuracoes()`, em `config.py`, carrega as variáveis de ambiente e verifica se os parâmetros necessários estão configurados corretamente.
-4. **Preparação do prompt** - `preparar_prompt()`, em `prompt.py`, fornece as instruções que orientam o modelo na identificação e organização das tarefas.
-5. **Processamento da anotação** - `organizar_anotacao()`, em `organizador.py`, coordena o processamento da entrada e a chamada ao modelo.
-6. **Comunicação com o LLM** - `chamar_llm()`, em `llm_client.py`, prepara e envia a requisição HTTP ao provedor e processa a resposta recebida.
+3. **Carregamento e validação da configuração** - `load_config()`, em `config.py`, carrega as variáveis de ambiente e verifica se os parâmetros necessários estão configurados corretamente.
+4. **Preparação do prompt** - `build_prompt()`, em `prompt.py`, fornece as instruções que orientam o modelo na identificação e organização das tarefas.
+5. **Processamento da anotação** - `organize_note()`, em `organizer.py`, coordena o processamento da entrada e a chamada ao modelo.
+6. **Comunicação com o LLM** - `call_llm()`, em `llm_client.py`, prepara e envia a requisição HTTP ao provedor e processa a resposta recebida.
 7. **Apresentação do resultado** - `main()` exibe a lista organizada no terminal.
 
 A aplicação também realiza o tratamento de erros relacionados às configurações, credenciais, comunicação com a API, indisponibilidade do serviço e respostas inválidas.
@@ -104,7 +104,7 @@ Exemplo de `.env` preenchido:
 LLM_API_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
 LLM_API_PATH=/chat/completions
 LLM_API_KEY=sua_chave_aqui
-LLM_MODEL=gemini-3.8-flash
+LLM_MODEL=gemini-3.5-flash
 
 LLM_MAX_TOKENS=2048
 LLM_TIMEOUT=60

@@ -1,33 +1,33 @@
 import requests
 
-from src.prompt import preparar_prompt
+from src.prompt import build_prompt
 
-def chamar_llm(anotacao, config):
+def call_llm(note, config):
     """Envia a solicitação ao LLM e retorna a resposta."""
 
     # Monta o endereço da requisição
     url = (
         config["base_url"].rstrip("/")
         + "/"
-        + config["caminho"].lstrip("/")
+        + config["path"].lstrip("/")
     )
 
     # Configura a autenticação
-    cabecalhos = {
+    headers = {
         "Authorization": f"Bearer {config['api_key']}"
     }
 
     # Monta o conteúdo enviado ao modelo
-    corpo = {
-        "model": config["modelo"],
+    payload = {
+        "model": config["model"],
         "messages": [
             {
                 "role": "system",
-                "content": preparar_prompt()
+                "content": build_prompt()
             },
             {
                 "role": "user",
-                "content": anotacao
+                "content": note
             }
         ],
         "max_tokens": config["max_tokens"]
@@ -35,58 +35,58 @@ def chamar_llm(anotacao, config):
 
     # Realiza a requisição HTTP
     try:
-        resposta = requests.post(
+        response = requests.post(
             url,
-            headers=cabecalhos,
-            json=corpo,
+            headers=headers,
+            json=payload,
             timeout=config["timeout"]
         )
 
         # Verifica erros HTTP
-        if resposta.status_code == 401:
+        if response.status_code == 401:
             raise RuntimeError(
                 "Credencial inválida ou não reconhecida pelo serviço."
             )
 
-        if resposta.status_code == 403:
+        if response.status_code == 403:
             raise RuntimeError(
                 "Acesso não autorizado. Verifique as permissões da credencial."
             )
 
-        if resposta.status_code == 404:
+        if response.status_code == 404:
             raise RuntimeError(
                 "Modelo ou endereço não encontrado. Verifique as configurações."
             )
 
-        if resposta.status_code == 429:
+        if response.status_code == 429:
             raise RuntimeError(
                 "Limite de solicitações atingido. Tente novamente mais tarde."
             )
 
-        if resposta.status_code == 503:
+        if response.status_code == 503:
             raise RuntimeError(
                 "O modelo está temporariamente sobrecarregado. Tente novamente em alguns instantes."
             )
 
-        if resposta.status_code >= 500:
+        if response.status_code >= 500:
             raise RuntimeError(
                 "O serviço do LLM está temporariamente indisponível."
             )
 
-        resposta.raise_for_status()
+        response.raise_for_status()
 
         # Extrai e processa o JSON retornado pelo modelo
-        dados = resposta.json()
+        data = response.json()
 
-        conteudo = dados["choices"][0]["message"]["content"]
+        content = data["choices"][0]["message"]["content"]
 
         # Tratamento para resposta inválida
-        if not isinstance(conteudo, str) or not conteudo.strip():
+        if not isinstance(content, str) or not content.strip():
             raise RuntimeError(
                 "O modelo retornou uma resposta vazia ou inválida."
             )
         
-        return conteudo.strip()
+        return content.strip()
 
     # Verificação de comunicação e resposta LLM
 
@@ -97,7 +97,7 @@ def chamar_llm(anotacao, config):
 
     except requests.exceptions.ConnectionError:
         raise RuntimeError(
-            "Não foi possível estabelescer conexão com o serviço de LLM"
+            "Não foi possível estabelecer conexão com o serviço de LLM"
         )
 
     except requests.exceptions.HTTPError:
