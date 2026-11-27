@@ -7,7 +7,7 @@ def carregar_configuracoes():
     # Carrega as configurações do .env
     load_dotenv()
 
-    # Tenta conexão com LLM
+    # Carrega os parâmetros de conexão com LLM
     try:
         config = {
             "base_url": os.getenv("LLM_API_BASE_URL"),
@@ -18,25 +18,24 @@ def carregar_configuracoes():
             "timeout": float(os.getenv("LLM_TIMEOUT", "60"))
         }
 
-    # Tratamento para valores de parâmetro inválidos
     except ValueError:
         raise ValueError(
             "Os parâmetros numéricos da configuração são inválidos."
         )
 
     # Verifica configurações obrigatórias
-    if not config["base_url"]:
-        raise ValueError("A URL da API não foi configurada.")
+    parametros_obrigatorios = {
+        "base_url": "A URL da API não foi configurada.",
+        "caminho": "O caminho da API não foi configurado.",
+        "api_key": "A chave da API não foi configurada.", 
+        "modelo": "O modelo da API não foi configurado."
+    }
 
-    if not config["caminho"]:
-        raise ValueError("O caminho da API não foi configurado.")
-    
-    if not config["api_key"]:
-        raise ValueError("A chave da API não foi configurada.")
-    
-    if not config["modelo"]:
-        raise ValueError("O modelo da API não foi configurado.")
-    
+    for parametro, mensagem in parametros_obrigatorios.items():
+        if not config[parametro] or not config[parametro].strip():
+            raise ValueError(mensagem)
+
+    # Valida os parâmetros numéricos
     if config["max_tokens"] <= 0:
         raise ValueError("O limite de tolkens deve ser maior que zero.")
     
