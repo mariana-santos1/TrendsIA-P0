@@ -43,10 +43,15 @@ def chamar_llm(anotacao, config):
         )
 
         # Verifica erros HTTP
-        if resposta.status_code in (401, 403):
+        if resposta.status_code == 401:
             raise RuntimeError(
-                "Credencial inválida ou sem autorização para acessar a API."
-            ) 
+                "Credencial inválida ou não reconhecida pelo serviço."
+            )
+
+        if resposta.status_code == 403:
+            raise RuntimeError(
+                "Acesso não autorizado. Verifique as permissões da credencial."
+            )
 
         if resposta.status_code == 404:
             raise RuntimeError(
